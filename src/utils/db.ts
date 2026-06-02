@@ -20,7 +20,7 @@ export interface ILoan {
 
 export interface IDatabaseSchema {
     books: IBook[]
-    loans: ILoan[]
+    borrows: ILoan[]
 }
 
 export class DatabaseRepository {
@@ -33,7 +33,7 @@ export class DatabaseRepository {
         } catch {
             return { 
                 books: [], 
-                loans: []
+                borrows: []
             }
         }
     }

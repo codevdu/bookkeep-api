@@ -39,7 +39,7 @@ export class LoanService {
             returned: false
         }
 
-        data.loans.push(newLoan)
+        data.borrows.push(newLoan)
         DatabaseRepository.write(data)
 
         return { 
@@ -51,7 +51,7 @@ export class LoanService {
 
     public getActiveLoans(): ILoan[] {
         const data = DatabaseRepository.read()
-        return data.loans.filter(l => !l.returned)
+        return data.borrows.filter(l => !l.returned)
     }
 
     public returnLoan(id: number): { 
@@ -60,7 +60,7 @@ export class LoanService {
         message: string 
     } {
         const data = DatabaseRepository.read();
-        const loan = data.loans.find(l => l.id === id);
+        const loan = data.borrows.find(l => l.id === id);
 
         // empréstimo não encontrado
         if (!loan) {

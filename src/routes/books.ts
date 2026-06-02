@@ -7,7 +7,7 @@ const bookService = new BookService();
 router.get("/", (req, res) => {
     const { genre } = req.query;
     const books = bookService.getAll(genre as string);
-    res.json(books);
+    res.json(books)
 });
 
 router.get("/:id", (req, res) => {

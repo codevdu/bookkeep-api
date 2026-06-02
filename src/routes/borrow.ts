@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { LoanService } from "../services/loan-service.ts"
+import { LoanService } from "../services/borrow-service.ts"
 
 const router = Router()
 const loanService = new LoanService()

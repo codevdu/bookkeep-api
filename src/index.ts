@@ -2,7 +2,7 @@ import express from "express"
 import swaggerUi from "swagger-ui-express"
 import { swaggerSpec } from "./swagger.ts"
 import bookRoutes from "./routes/books.ts"
-import loanRoutes from "./routes/loans.ts"
+import loanRoutes from "./routes/borrow.ts"
 
 const app = express()
 const port = 3000
@@ -10,7 +10,7 @@ const port = 3000
 app.use(express.json())
 
 app.use("/books", bookRoutes)
-app.use("/loans", loanRoutes)
+app.use("/borrows", loanRoutes)
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 

@@ -127,7 +127,7 @@ const options: swaggerJsdoc.Options = {
                     },
                 },
             },
-            "/loans": {
+            "/borrows": {
                 post: {
                     summary: "Registra um novo empréstimo",
                     requestBody: {
@@ -167,7 +167,7 @@ const options: swaggerJsdoc.Options = {
                     },
                 },
             },
-            "/loans/{id}/return": {
+            "/borrows/{id}/return": {
                 patch: {
                     summary: "Marca um empréstimo como devolvido",
                     parameters: [
