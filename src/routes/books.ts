@@ -22,11 +22,32 @@ router.get("/:id", (req, res) => {
 })
 
 router.post("/", (req, res) => {
-    const { title, author, genre } = req.body
+    const { title, author, genre, description, imageURL } = req.body
 
-    if (!title || !author || !genre) {
+    if (!title) {
         res.status(400).json({ 
             error: "Preencha todos os campos!" 
+        })
+        return
+    }
+
+    if (!genre) {
+        res.status(400).json({ 
+            error: "O gênero do livro é obrigatório." 
+        })
+        return
+    }
+
+    if (!description) {
+        res.status(400).json({ 
+            error: "A descrição do livro é obrigatório." 
+        })
+        return
+    }
+
+    if (!imageURL) {
+        res.status(400).json({ 
+            error: "A imagem do livro é obrigatória." 
         })
         return
     }
@@ -34,7 +55,9 @@ router.post("/", (req, res) => {
     const newBook = bookService.create({ 
         title, 
         author, 
-        genre 
+        genre,
+        description,
+        imageURL
     })
     res.status(201).json(newBook)
 })

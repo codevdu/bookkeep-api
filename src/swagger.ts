@@ -42,11 +42,13 @@ const options: swaggerJsdoc.Options = {
                             "application/json": {
                                 schema: {
                                     type: "object",
-                                    required: ["title", "author", "genre"],
+                                    required: ["title", "author", "genre", "description", "imageURL"],
                                     properties: {
                                         title: { type: "string" },
                                         author: { type: "string" },
                                         genre: { type: "string" },
+                                        description: { type: "string" },
+                                        imageURL: { type: "string" },
                                     },
                                 },
                             },
