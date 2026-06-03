@@ -21,7 +21,9 @@ export class BookService {
             id: Date.now(),
             title: bookData.title!,
             author: bookData.author!,
+            description: bookData.description!,
             genre: bookData.genre!,
+            imageURL: bookData.imageURL!,
             available: true
         }
 

@@ -7,6 +7,8 @@ export interface IBook {
     title: string
     author: string
     genre: string
+    description: string
+    imageURL: string
     available: boolean
 }
 
