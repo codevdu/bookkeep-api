@@ -64,7 +64,9 @@ router.post("/", (req, res) => {
         author, 
         genre,
         description,
-        imageURL
+        pages,
+        imageURL,
+        available: true
     })
     res.status(201).json(newBook)
 })
