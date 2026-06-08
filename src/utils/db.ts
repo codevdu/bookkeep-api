@@ -1,5 +1,5 @@
 import fs from "fs"
-import path from "path"
+import * as path from "path"
 import { fileURLToPath } from "url"
 
 export interface IBook {
@@ -12,17 +12,17 @@ export interface IBook {
     available: boolean
 }
 
-export interface ILoan {
+export interface IBorrow {
     id: number
     bookId: number
     studentName: string
-    loanDate: string
+    borrowDate: string
     returned: boolean
 }
 
 export interface IDatabaseSchema {
     books: IBook[]
-    borrows: ILoan[]
+    borrows: IBorrow[]
 }
 
 export class DatabaseRepository {
