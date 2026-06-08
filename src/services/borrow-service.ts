@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto"
 import { DatabaseRepository, IBorrow } from "../utils/db.ts"
 
 export class BorrowService {
@@ -7,8 +8,16 @@ export class BorrowService {
         message?: string
         borrow?: IBorrow
     } {
-        const databaseState = DatabaseRepository.read();
-        const targetBook = databaseState.books.find(book => book.id === borrowData.bookId)
+        const databaseState = DatabaseRepository.read()
+        if (borrowData.bookId === undefined) {
+            return {
+                success: false,
+                status: 400,
+                message: "ID do livro é obrigatório."
+            }
+        }
+
+        const targetBook = databaseState.books.find(book => String(book.id) === borrowData.bookId)
 
         // verifica se o livro existe
         if (!targetBook) {
@@ -32,7 +41,7 @@ export class BorrowService {
         targetBook.available = false
 
         const newBorrow: IBorrow = {
-            id: Date.now() + 1,
+            id: randomUUID(),
             bookId: borrowData.bookId!,
             studentName: borrowData.studentName!,
             borrowDate: borrowData.borrowDate || new Date().toISOString().split("T")[0],
@@ -56,7 +65,7 @@ export class BorrowService {
         return allBorrows.filter(borrow => !borrow.returned)
     }
 
-    public returnBorrow(borrowId: number): { 
+    public returnBorrow(borrowId: string): { 
         success: boolean,
         status: number,
         message: string 

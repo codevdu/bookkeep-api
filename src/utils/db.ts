@@ -3,18 +3,19 @@ import * as path from "path"
 import { fileURLToPath } from "url"
 
 export interface IBook {
-    id: number
+    id: string
     title: string
     author: string
-    genre: string
+    genre: string[]
+    pages: number
     description: string
     imageURL: string
     available: boolean
 }
 
 export interface IBorrow {
-    id: number
-    bookId: number
+    id: string
+    bookId: string
     studentName: string
     borrowDate: string
     returned: boolean

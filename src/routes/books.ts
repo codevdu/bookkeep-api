@@ -11,7 +11,7 @@ router.get("/", (req, res) => {
 })
 
 router.get("/:id", (req, res) => {
-    const book = bookService.getById(Number(req.params.id));
+    const book = bookService.getById(String(req.params.id));
     if (!book) {
         res.status(404).json({ 
             error: "Livro não encontrado"
@@ -22,7 +22,7 @@ router.get("/:id", (req, res) => {
 })
 
 router.post("/", (req, res) => {
-    const { title, author, genre, description, imageURL } = req.body
+    const { title, author, genre, description, pages, imageURL } = req.body
 
     if (!title) {
         res.status(400).json({ 
@@ -45,6 +45,13 @@ router.post("/", (req, res) => {
         return
     }
 
+    if (!pages) {
+        res.status(400).json({ 
+            error: "O número de páginas do livro é obrigatório." 
+        })
+        return
+    }
+
     if (!imageURL) {
         res.status(400).json({ 
             error: "A imagem do livro é obrigatória." 
@@ -63,7 +70,8 @@ router.post("/", (req, res) => {
 })
 
 router.put("/:id", (req, res) => {
-    const updatedBook = bookService.update(Number(req.params.id), req.body)
+    console.log('[debug] route PUT /books/:id received', req.params.id)
+    const updatedBook = bookService.update(String(req.params.id), req.body)
     if (!updatedBook) {
         res.status(404).json({ 
             error: "Livro não encontrado"
@@ -74,7 +82,7 @@ router.put("/:id", (req, res) => {
 })
 
 router.delete("/:id", (req, res) => {
-    const success = bookService.delete(Number(req.params.id))
+    const success = bookService.delete(String(req.params.id))
     if (!success) {
         res.status(404).json({ 
             error: "Livro não encontrado"

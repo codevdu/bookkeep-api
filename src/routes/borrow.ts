@@ -15,7 +15,7 @@ router.post("/", (req, res) => {
     }
 
     const result = borrowService.createBorrow({ 
-        bookId: Number(bookId), 
+        bookId: String(bookId), 
         studentName, borrowDate
     })
     
@@ -28,12 +28,12 @@ router.post("/", (req, res) => {
 })
 
 router.get("/", (req, res) => {
-    const activeBorrows = BorrowService.prototype.getActiveBorrows()
+    const activeBorrows = borrowService.getActiveBorrows()
     res.json(activeBorrows)
 })
 
 router.patch("/:id/return", (req, res) => {
-    const result = borrowService.returnBorrow(Number(req.params.id))
+    const result = borrowService.returnBorrow(String(req.params.id))
     
     if (!result.success) {
         res.status(result.status).json({ 
