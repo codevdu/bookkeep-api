@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto"
 import { DatabaseRepository, IBook } from "../utils/db.ts"
 
 export class BookService {
@@ -6,37 +7,38 @@ export class BookService {
         const allBooks = databaseState.books
 
         if (genre) {
-            return allBooks.filter(book => book.genre.toLowerCase() === genre.toLowerCase())
+            return allBooks.filter(book => book.genre.includes(genre))
         }
         return allBooks
     }
 
-    public getById(id: number): IBook | null {
+    public getById(id: string): IBook | null {
         const databaseState = DatabaseRepository.read()
-        return databaseState.books.find(book => book.id === id) || null
+        return databaseState.books.find(book => String(book.id) === id) || null
     }
 
     public create(bookData: Partial<IBook>): IBook {
         const databaseState = DatabaseRepository.read()
         
         const newBook: IBook = {
-            id: Date.now(),
+            id: randomUUID(),
             title: bookData.title!,
             author: bookData.author!,
             description: bookData.description!,
             genre: bookData.genre!,
+            pages: bookData.pages!,
             imageURL: bookData.imageURL!,
             available: true
-        };
+        }
 
         databaseState.books.push(newBook)
         DatabaseRepository.write(databaseState)
         return newBook
     }
 
-    public update(id: number, updateData: Partial<IBook>): IBook | null {
+    public update(id: string, updateData: Partial<IBook>): IBook | null {
         const databaseState = DatabaseRepository.read()
-        const bookIndex = databaseState.books.findIndex(book => book.id === id)
+        const bookIndex = databaseState.books.findIndex(book => String(book.id) === id)
         
         if (bookIndex === -1) return null
 
@@ -44,7 +46,7 @@ export class BookService {
             ...databaseState.books[bookIndex], 
             ...updateData, 
             id 
-        };
+        }
 
         databaseState.books[bookIndex] = updatedBook
         
@@ -52,9 +54,9 @@ export class BookService {
         return updatedBook
     }
 
-    public delete(id: number): boolean {
-        const databaseState = DatabaseRepository.read();
-        const bookIndex = databaseState.books.findIndex(book => book.id === id)
+    public delete(id: string): boolean {
+        const databaseState = DatabaseRepository.read()
+        const bookIndex = databaseState.books.findIndex(book => String(book.id) === id)
         
         if (bookIndex === -1) return false
 
