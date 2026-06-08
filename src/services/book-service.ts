@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto"
 import { DatabaseRepository, IBook } from "../utils/db.ts"
+import { CreateBookInput } from "../schema/book-schema.ts"
 
 export class BookService {
     public getAll(genre?: string): IBook[] {
@@ -17,17 +18,17 @@ export class BookService {
         return databaseState.books.find(book => String(book.id) === id) || null
     }
 
-    public create(bookData: Partial<IBook>): IBook {
+    public create(bookData: CreateBookInput): IBook {
         const databaseState = DatabaseRepository.read()
         
         const newBook: IBook = {
             id: randomUUID(),
-            title: bookData.title!,
-            author: bookData.author!,
-            description: bookData.description!,
-            genre: bookData.genre!,
-            pages: bookData.pages!,
-            imageURL: bookData.imageURL!,
+            title: bookData.title,
+            author: bookData.author,
+            description: bookData.description || "", 
+            genre: bookData.genre,
+            pages: bookData.pages,
+            imageURL: bookData.imageURL || "", 
             available: true
         }
 
