@@ -1,11 +1,11 @@
 import { Router } from "express"
-import { LoanService } from "../services/borrow-service.ts"
+import { BorrowService } from "../services/borrow-service.ts"
 
 const router = Router()
-const loanService = new LoanService()
+const borrowService = new BorrowService()
 
 router.post("/", (req, res) => {
-    const { bookId, studentName, loanDate } = req.body
+    const { bookId, studentName, borrowDate } = req.body
 
     if (!bookId || !studentName) {
         res.status(400).json({ 
@@ -14,9 +14,9 @@ router.post("/", (req, res) => {
         return
     }
 
-    const result = loanService.createLoan({ 
+    const result = borrowService.createBorrow({ 
         bookId: Number(bookId), 
-        studentName, loanDate 
+        studentName, borrowDate
     })
     
     if (!result.success) {
@@ -24,16 +24,16 @@ router.post("/", (req, res) => {
         return
     }
 
-    res.status(201).json(result.loan)
-});
+    res.status(201).json(result.borrow)
+})
 
 router.get("/", (req, res) => {
-    const activeLoans = loanService.getActiveLoans()
-    res.json(activeLoans)
+    const activeBorrows = BorrowService.prototype.getActiveBorrows()
+    res.json(activeBorrows)
 })
 
 router.patch("/:id/return", (req, res) => {
-    const result = loanService.returnLoan(Number(req.params.id))
+    const result = borrowService.returnBorrow(Number(req.params.id))
     
     if (!result.success) {
         res.status(result.status).json({ 

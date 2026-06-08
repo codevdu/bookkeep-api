@@ -1,14 +1,14 @@
-import { Router } from "express";
-import { BookService } from "../services/book-service.ts";
+import { Router } from "express"
+import { BookService } from "../services/book-service.ts"
 
-const router = Router();
-const bookService = new BookService();
+const router = Router()
+const bookService = new BookService()
 
 router.get("/", (req, res) => {
     const { genre } = req.query;
     const books = bookService.getAll(genre as string);
     res.json(books)
-});
+})
 
 router.get("/:id", (req, res) => {
     const book = bookService.getById(Number(req.params.id));

@@ -1,21 +1,23 @@
-import { DatabaseRepository, IBook } from "../utils/db.ts";
+import { DatabaseRepository, IBook } from "../utils/db.ts"
 
 export class BookService {
-    public getAll(genre ?: string): IBook[] {
-        const data = DatabaseRepository.read()
+    public getAll(genre?: string): IBook[] {
+        const databaseState = DatabaseRepository.read()
+        const allBooks = databaseState.books
+
         if (genre) {
-            return data.books.filter(b => b.genre.toLowerCase() === genre.toLowerCase())
+            return allBooks.filter(book => book.genre.toLowerCase() === genre.toLowerCase())
         }
-        return data.books;
+        return allBooks
     }
 
     public getById(id: number): IBook | null {
-        const data = DatabaseRepository.read();
-        return data.books.find(b => b.id === id) || null;
+        const databaseState = DatabaseRepository.read()
+        return databaseState.books.find(book => book.id === id) || null
     }
 
     public create(bookData: Partial<IBook>): IBook {
-        const data = DatabaseRepository.read();
+        const databaseState = DatabaseRepository.read()
         
         const newBook: IBook = {
             id: Date.now(),
@@ -25,41 +27,39 @@ export class BookService {
             genre: bookData.genre!,
             imageURL: bookData.imageURL!,
             available: true
-        }
+        };
 
-        data.books.push(newBook)
-        DatabaseRepository.write(data)
+        databaseState.books.push(newBook)
+        DatabaseRepository.write(databaseState)
         return newBook
     }
 
-    public update(
-        id: number, 
-        updateData: Partial<IBook>): IBook | null {
-        const data = DatabaseRepository.read()
-        const index = data.books.findIndex(b => b.id === id)
+    public update(id: number, updateData: Partial<IBook>): IBook | null {
+        const databaseState = DatabaseRepository.read()
+        const bookIndex = databaseState.books.findIndex(book => book.id === id)
         
-        if (index === -1) return null
+        if (bookIndex === -1) return null
 
         const updatedBook = { 
-            ...data.books[index], 
+            ...databaseState.books[bookIndex], 
             ...updateData, 
             id 
-        }
+        };
 
-        data.books[index] = updatedBook
+        databaseState.books[bookIndex] = updatedBook
         
-        DatabaseRepository.write(data)
+        DatabaseRepository.write(databaseState)
         return updatedBook
     }
 
     public delete(id: number): boolean {
-        const data = DatabaseRepository.read()
-        const index = data.books.findIndex(b => b.id === id)
+        const databaseState = DatabaseRepository.read();
+        const bookIndex = databaseState.books.findIndex(book => book.id === id)
         
-        if (index === -1) return false;
+        if (bookIndex === -1) return false
 
-        data.books.splice(index, 1)
-        DatabaseRepository.write(data)
+        databaseState.books.splice(bookIndex, 1)
+        DatabaseRepository.write(databaseState)
         return true
     }
 }

@@ -1,17 +1,17 @@
-import { DatabaseRepository, ILoan } from "../utils/db.ts";
+import { DatabaseRepository, IBorrow } from "../utils/db.ts"
 
-export class LoanService {
-    public createLoan(loanData: Partial<ILoan>): {
+export class BorrowService {
+    public createBorrow(borrowData: Partial<IBorrow>): {
         success: boolean
         status: number
         message?: string
-        loan?: ILoan
+        borrow?: IBorrow
     } {
-        const data = DatabaseRepository.read()
-        const book = data.books.find(b => b.id === loanData.bookId)
+        const databaseState = DatabaseRepository.read();
+        const targetBook = databaseState.books.find(book => book.id === borrowData.bookId)
 
-        // livro deve existir
-        if (!book) {
+        // verifica se o livro existe
+        if (!targetBook) {
             return {
                 success: false,
                 status: 404,
@@ -20,7 +20,7 @@ export class LoanService {
         }
 
         // livro indisponível
-        if (!book.available) {
+        if (!targetBook.available) {
             return {
                 success: false,
                 status: 400,
@@ -28,65 +28,69 @@ export class LoanService {
             }
         }
 
-        // alterar o campo available do livro para false
-        book.available = false;
+        // alterar o status do livro para indisponível
+        targetBook.available = false
 
-        const newLoan: ILoan = {
+        const newBorrow: IBorrow = {
             id: Date.now() + 1,
-            bookId: loanData.bookId!,
-            studentName: loanData.studentName!,
-            loanDate: loanData.loanDate || new Date().toISOString().split("T")[0],
+            bookId: borrowData.bookId!,
+            studentName: borrowData.studentName!,
+            borrowDate: borrowData.borrowDate || new Date().toISOString().split("T")[0],
             returned: false
         }
 
-        data.borrows.push(newLoan)
-        DatabaseRepository.write(data)
+        databaseState.borrows.push(newBorrow)
+        DatabaseRepository.write(databaseState)
 
         return { 
             success: true, 
             status: 201, 
-            loan: newLoan 
+            borrow: newBorrow 
         }
     }
 
-    public getActiveLoans(): ILoan[] {
-        const data = DatabaseRepository.read()
-        return data.borrows.filter(l => !l.returned)
+    public getActiveBorrows(): IBorrow[] {
+        const databaseState = DatabaseRepository.read()
+        const allBorrows = databaseState.borrows
+        
+        return allBorrows.filter(borrow => !borrow.returned)
     }
 
-    public returnLoan(id: number): { 
+    public returnBorrow(borrowId: number): { 
         success: boolean,
         status: number,
         message: string 
     } {
-        const data = DatabaseRepository.read();
-        const loan = data.borrows.find(l => l.id === id);
+        const databaseState = DatabaseRepository.read();
+        const currentBorrow = databaseState.borrows.find(borrow => borrow.id === borrowId)
 
         // empréstimo não encontrado
-        if (!loan) {
+        if (!currentBorrow) {
             return { 
                 success: false, 
                 status: 404, 
                 message: "Empréstimo não encontrado." 
-            }
+            };
         }
 
-        if (loan.returned) {
+        if (currentBorrow.returned) {
             return { 
                 success: false, 
                 status: 400, 
                 message: "Este empréstimo já foi devolvido anteriormente." 
-            }
+            };
         }
 
-        // atualiza o empréstimo e o livro correspondente
-        loan.returned = true
-        const book = data.books.find(b => b.id === loan.bookId)
-        if (book) {
-            book.available = true
+        // atualiza o status do emprestimo para devolvido e torna o livro disponível novamente
+        currentBorrow.returned = true
+        
+        const associatedBook = databaseState.books.find(book => book.id === currentBorrow.bookId)
+        if (associatedBook) {
+            associatedBook.available = true
         }
 
-        DatabaseRepository.write(data)
+        DatabaseRepository.write(databaseState)
+        
         return {
             success: true,
             status: 200,
