@@ -1,5 +1,7 @@
 import { Router } from "express"
 import { BookService } from "../services/book-service.ts"
+import { createBookSchema } from "../schema/book-schema.ts"
+import { z } from "zod"
 
 const router = Router()
 const bookService = new BookService()
@@ -22,53 +24,20 @@ router.get("/:id", (req, res) => {
 })
 
 router.post("/", (req, res) => {
-    const { title, author, genre, description, pages, imageURL } = req.body
+    try {
+        const validatedData = createBookSchema.parse(req.body)
 
-    if (!title) {
-        res.status(400).json({ 
-            error: "Preencha todos os campos!" 
-        })
-        return
+        const newBook = bookService.create(validatedData);
+
+        res.status(201).json(newBook)
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            res.status(400).json({ 
+                error: error.issues.map((err) => err.message).join("; ") 
+            })
+            return
+        }
     }
-
-    if (!genre) {
-        res.status(400).json({ 
-            error: "O gênero do livro é obrigatório." 
-        })
-        return
-    }
-
-    if (!description) {
-        res.status(400).json({ 
-            error: "A descrição do livro é obrigatório." 
-        })
-        return
-    }
-
-    if (!pages) {
-        res.status(400).json({ 
-            error: "O número de páginas do livro é obrigatório." 
-        })
-        return
-    }
-
-    if (!imageURL) {
-        res.status(400).json({ 
-            error: "A imagem do livro é obrigatória." 
-        })
-        return
-    }
-
-    const newBook = bookService.create({ 
-        title, 
-        author, 
-        genre,
-        description,
-        pages,
-        imageURL,
-        available: true
-    })
-    res.status(201).json(newBook)
 })
 
 router.put("/:id", (req, res) => {
